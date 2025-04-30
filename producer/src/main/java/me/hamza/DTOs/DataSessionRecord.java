@@ -1,0 +1,68 @@
+package me.hamza.DTOs;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class DataSessionRecord {
+    @JsonProperty("record_type")
+    private final String recordType = "data";
+
+    @JsonProperty("timestamp")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
+    private String timestamp;
+
+    @JsonProperty("user_id")
+    private String userId;
+
+    @JsonProperty("data_volume_mb")
+    private double dataVolumeMb;
+
+    @JsonProperty("session_duration_sec")
+    private int sessionDurationSec;
+
+    @JsonProperty("cell_id")
+    private String cellId;
+
+    @JsonProperty("technology")
+    private String technology;
+
+    // Constructor
+    public DataSessionRecord(String timestamp, String userId, double dataVolumeMb, int sessionDurationSec,
+            String cellId, String technology) {
+        this.timestamp = timestamp;
+        this.userId = userId;
+        this.dataVolumeMb = dataVolumeMb;
+        this.sessionDurationSec = sessionDurationSec;
+        this.cellId = cellId;
+        this.technology = technology;
+    }
+
+    // Getters
+    public String getRecordType() {
+        return recordType;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public double getDataVolumeMb() {
+        return dataVolumeMb;
+    }
+
+    public int getSessionDurationSec() {
+        return sessionDurationSec;
+    }
+
+    public String getCellId() {
+        return cellId;
+    }
+
+    public String getTechnology() {
+        return technology;
+    }
+}

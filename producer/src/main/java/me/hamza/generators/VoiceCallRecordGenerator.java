@@ -32,8 +32,8 @@ public class VoiceCallRecordGenerator {
     public static VoiceCallRecord generateRecord() {
         return new VoiceCallRecord(
                 Instant.now().minusSeconds(random.nextInt(86400)).toString(),
-                "+212 " + faker.number().digits(9),
-                "+212 " + faker.number().digits(9),
+                "+212 " + faker.options().option("6", "7") + faker.number().digits(8),
+                "+212 " + faker.options().option("6", "7") + faker.number().digits(8),
                 random.nextInt(1024),
                 faker.address().cityName().toUpperCase() + "_" + random.nextInt(50),
                 faker.options().option("2G", "3G", "4G"));
