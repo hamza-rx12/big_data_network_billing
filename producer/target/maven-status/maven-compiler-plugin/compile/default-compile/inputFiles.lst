@@ -1,0 +1,8 @@
+/home/oumaima/Desktop/ID2-S2/big data avancée/big_data_network_billing/producer/src/main/java/me/hamza/MyProducer.java
+/home/oumaima/Desktop/ID2-S2/big data avancée/big_data_network_billing/producer/src/main/java/me/hamza/Main.java
+/home/oumaima/Desktop/ID2-S2/big data avancée/big_data_network_billing/producer/src/main/java/me/hamza/DTOs/SMSRecord.java
+/home/oumaima/Desktop/ID2-S2/big data avancée/big_data_network_billing/producer/src/main/java/me/hamza/KafkaVoiceCallConsumer.java
+/home/oumaima/Desktop/ID2-S2/big data avancée/big_data_network_billing/producer/src/main/java/me/hamza/generators/VoiceCallRecordGenerator.java
+/home/oumaima/Desktop/ID2-S2/big data avancée/big_data_network_billing/producer/src/main/java/me/hamza/generators/GenericRecordGenerator.java
+/home/oumaima/Desktop/ID2-S2/big data avancée/big_data_network_billing/producer/src/main/java/me/hamza/DTOs/VoiceCallRecord.java
+/home/oumaima/Desktop/ID2-S2/big data avancée/big_data_network_billing/producer/src/main/java/me/hamza/DTOs/DataSessionRecord.java
