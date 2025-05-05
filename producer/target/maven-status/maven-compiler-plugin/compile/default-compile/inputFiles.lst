@@ -1,8 +1,5 @@
 /home/natsu/Desktop/kafka/producer/src/main/java/me/hamza/DTOs/DataSessionRecord.java
 /home/natsu/Desktop/kafka/producer/src/main/java/me/hamza/DTOs/VoiceCallRecord.java
 /home/natsu/Desktop/kafka/producer/src/main/java/me/hamza/generators/GenericRecordGenerator.java
-/home/natsu/Desktop/kafka/producer/src/main/java/me/hamza/generators/VoiceCallRecordGenerator.java
 /home/natsu/Desktop/kafka/producer/src/main/java/me/hamza/Main.java
-/home/natsu/Desktop/kafka/producer/src/main/java/me/hamza/MyProducer.java
 /home/natsu/Desktop/kafka/producer/src/main/java/me/hamza/DTOs/SMSRecord.java
-/home/natsu/Desktop/kafka/producer/src/main/java/me/hamza/KafkaVoiceCallConsumer.java

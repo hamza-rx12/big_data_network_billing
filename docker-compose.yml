@@ -1,0 +1,123 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - my_net
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: kafka
+    hostname: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092 # ,PLAINTEXT://localhost:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      # KAFKA_MESSAGE_MAX_BYTES: 104857600
+    networks:
+      - my_net
+    # kafka1:
+    # image: confluentinc/cp-kafka:7.4.0
+    # container_name: kafka1
+    # hostname: kafka1
+    # depends_on:
+    #   - zookeeper
+    # ports:
+    #   - "9092:9092"
+    # environment:
+    #   KAFKA_BROKER_ID: 1
+    #   KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    #   KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092 # ,PLAINTEXT://localhost:9092
+    #   KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+    #   KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    # networks:
+    #   - my_net
+
+
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    depends_on:
+      - kafka
+    networks:
+      - my_net
+
+  producer:
+    build:
+      context: ./producer
+    container_name: producer
+    # healthcheck:
+    #   test: [ "CMD", "curl", "-f", "http://kafka:9092" ]
+    #   interval: 5s
+    #   timeout: 3s
+    #   retries: 3
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BROKER: kafka:9092
+    networks:
+      - my_net
+
+  jobmanager:
+    image: confluentinc/cp-flink:1.18.1-cp3-java17-amd64
+    command: jobmanager
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=jobmanager
+    ports:
+      - "8081:8081"
+    networks:
+      - my_net
+  taskmanager:
+    image: confluentinc/cp-flink:1.18.1-cp3-java17-amd64
+    command: taskmanager
+    depends_on:
+      - jobmanager
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=jobmanager
+    networks:
+      - my_net
+
+  consumer:
+    build:
+      context: ./consumer
+    container_name: consumer
+    # healthcheck:
+    #   test: [ "CMD", "curl", "-f", "http://kafka:9092" ]
+    #   interval: 5s
+    #   timeout: 3s
+    #   retries: 3
+    depends_on:
+      - kafka
+      - producer
+      - jobmanager
+      - taskmanager
+    # restart: on-failure
+    environment:
+      KAFKA_BROKER: kafka:9092
+    # ports:
+    #   - "8081:8081"
+    networks:
+      - my_net
+
+networks:
+  my_net:
+    driver: bridge

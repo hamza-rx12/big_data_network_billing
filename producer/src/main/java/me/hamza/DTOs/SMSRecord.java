@@ -56,4 +56,11 @@ public class SMSRecord {
     public String getTechnology() {
         return technology;
     }
+
+    @Override
+    public String toString() {
+        return "SMSRecord [recordType=" + recordType + ", timestamp=" + timestamp + ", senderId=" + senderId
+                + ", receiverId=" + receiverId + ", cellId=" + cellId + ", technology=" + technology + "]";
+    }
+
 }

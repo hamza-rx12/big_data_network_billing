@@ -67,4 +67,12 @@ public class VoiceCallRecord {
     public String getTechnology() {
         return technology;
     }
+
+    @Override
+    public String toString() {
+        return "VoiceCallRecord [recordType=" + recordType + ", timestamp=" + timestamp + ", callerId=" + callerId
+                + ", calleeId=" + calleeId + ", durationSec=" + durationSec + ", cellId=" + cellId + ", technology="
+                + technology + "]";
+    }
+
 }

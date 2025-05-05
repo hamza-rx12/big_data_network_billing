@@ -12,7 +12,7 @@ public class MyConsumer {
     public static void main(String[] args) {
         // Set up the consumer properties
         Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka:9092");
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "my-group-id");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
@@ -24,7 +24,7 @@ public class MyConsumer {
             consumer = new KafkaConsumer<>(props);
 
             // Subscribe to the topic
-            consumer.subscribe(Collections.singletonList("messages"));
+            consumer.subscribe(Collections.singletonList("voice-calls"));
 
             // Continuously poll for new messages
             while (true) {

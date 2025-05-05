@@ -65,4 +65,12 @@ public class DataSessionRecord {
     public String getTechnology() {
         return technology;
     }
+
+    @Override
+    public String toString() {
+        return "DataSessionRecord [recordType=" + recordType + ", timestamp=" + timestamp + ", userId=" + userId
+                + ", dataVolumeMb=" + dataVolumeMb + ", sessionDurationSec=" + sessionDurationSec + ", cellId=" + cellId
+                + ", technology=" + technology + "]";
+    }
+
 }
