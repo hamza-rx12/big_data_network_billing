@@ -31,3 +31,12 @@ services:
       - kafka
     environment:
       KAFKA_BROKER: kafka:9092
+
+  consumer:
+    build:
+      context: ./consumer
+    container_name: consumer
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BROKER: kafka:9092
