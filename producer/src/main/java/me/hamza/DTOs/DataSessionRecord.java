@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DataSessionRecord {
     @JsonProperty("record_type")
-    private final String recordType = "data";
+    private final Integer recordType = 3;
 
     @JsonProperty("timestamp")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
@@ -15,10 +15,10 @@ public class DataSessionRecord {
     private String userId;
 
     @JsonProperty("data_volume_mb")
-    private double dataVolumeMb;
+    private Double dataVolumeMb;
 
     @JsonProperty("session_duration_sec")
-    private int sessionDurationSec;
+    private Integer sessionDurationSec;
 
     @JsonProperty("cell_id")
     private String cellId;
@@ -38,7 +38,7 @@ public class DataSessionRecord {
     }
 
     // Getters
-    public String getRecordType() {
+    public Integer getRecordType() {
         return recordType;
     }
 

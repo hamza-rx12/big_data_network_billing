@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SMSRecord {
     @JsonProperty("record_type")
-    private final String recordType = "sms";
+    private final Integer recordType = 2;
 
     @JsonProperty("timestamp")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
@@ -33,7 +33,7 @@ public class SMSRecord {
     }
 
     // Getters
-    public String getRecordType() {
+    public Integer getRecordType() {
         return recordType;
     }
 

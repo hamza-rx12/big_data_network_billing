@@ -22,12 +22,14 @@ public class Main {
     public static final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
     public static void main(String[] args) {
-
+        env.enableCheckpointing(1000); // e.g., every 5 seconds
         KafkaSource<String> voiceCallSource = KafkaSource.<String>builder().setBootstrapServers(BOOTSTRAP_SERVERS)
                 .setTopics("voice-calls")
                 .setGroupId(GROUP_ID_CONFIG)
                 .setStartingOffsets(OffsetsInitializer.earliest())
                 .setDeserializer(KafkaRecordDeserializationSchema.valueOnly(StringDeserializer.class))
+                .setProperty("commit.offsets.on.checkpoint", "true") // Explicit offset commit
+                .setProperty("metrics.context", "kafka.consumer") // Enable metrics
                 .build();
 
         KafkaSource<String> smsMessagesSource = KafkaSource.<String>builder().setBootstrapServers(BOOTSTRAP_SERVERS)
@@ -51,20 +53,53 @@ public class Main {
         DataStream<String> dataUsage = env.fromSource(dataUsageSource, WatermarkStrategy.noWatermarks(),
                 BOOTSTRAP_SERVERS);
 
-        voiceCalls.map(record -> {
-            System.out.println("Voice Call Record: " + record);
-            return record;
-        }).name("Voice Calls Processor");
+        ///////////////////////////////
+        /// TESTING ///////////////////
+        ///////////////////////////////
+        DataStream<String> processedVoiceCalls = voiceCalls.map(record -> {
+            // Example: Add a prefix to the record
+            String processedRecord = "Processed Voice Call: " + record;
+            System.out.println(processedRecord);
+            return processedRecord;
+        }).name("Processed Voice Calls");
 
-        smsMessages.map(record -> {
-            System.out.println("SMS Message Record: " + record);
-            return record;
-        }).name("SMS Messages Processor");
+        DataStream<String> processedSmsMessages = smsMessages.map(record -> {
+            // Example: Convert the record to uppercase
+            String processedRecord = record.toUpperCase();
+            System.out.println("Processed SMS Message: " + processedRecord);
+            return processedRecord;
+        }).name("Processed SMS Messages");
 
-        dataUsage.map(record -> {
-            System.out.println("Data Usage Record: " + record);
+        DataStream<String> processedDataUsage = dataUsage.map(record -> {
+            // Example: Append a suffix to the record
+            String processedRecord = record + " [Data Usage Processed]";
+            System.out.println(processedRecord);
+            return processedRecord;
+        }).name("Processed Data Usage");
+
+        // Example: Merge all processed streams into one
+        DataStream<String> mergedStream = processedVoiceCalls.union(processedSmsMessages, processedDataUsage);
+
+        // Print the merged stream
+        mergedStream.map(record -> {
+            System.out.println("Merged Record: " + record);
             return record;
-        }).name("Data Usage Processor");
+        }).name("Merged Stream Processor");
+
+        // voiceCalls.map(record -> {
+        // System.out.println("Voice Call Record: " + record);
+        // return record;
+        // }).name("Voice Calls Processor");
+
+        // smsMessages.map(record -> {
+        // System.out.println("SMS Message Record: " + record);
+        // return record;
+        // }).name("SMS Messages Processor");
+
+        // dataUsage.map(record -> {
+        // System.out.println("Data Usage Record: " + record);
+        // return record;
+        // }).name("Data Usage Processor");
 
         // Execute the Flink job
         try {

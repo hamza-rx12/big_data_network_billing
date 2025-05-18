@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class VoiceCallRecord {
     @JsonProperty("record_type")
-    private final String recordType = "voice";
+    private final Integer recordType = 1;
 
     @JsonProperty("timestamp")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
@@ -20,7 +20,7 @@ public class VoiceCallRecord {
     private String calleeId;
 
     @JsonProperty("duration_sec")
-    private int durationSec;
+    private Integer durationSec;
 
     @JsonProperty("cell_id")
     private String cellId;
@@ -40,7 +40,7 @@ public class VoiceCallRecord {
     }
 
     // Getters (needed for Jackson serialization)
-    public String getRecordType() {
+    public Integer getRecordType() {
         return recordType;
     }
 

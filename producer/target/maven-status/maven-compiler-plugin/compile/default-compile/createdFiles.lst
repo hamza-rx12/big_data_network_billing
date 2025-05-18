@@ -3,3 +3,4 @@ me/hamza/DTOs/VoiceCallRecord.class
 me/hamza/DTOs/DataSessionRecord.class
 me/hamza/generators/GenericRecordGenerator.class
 me/hamza/Main.class
+me/hamza/Main$1.class
