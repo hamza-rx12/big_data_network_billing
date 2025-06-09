@@ -50,7 +50,11 @@ public class StreamProcessor implements Serializable {
             @Override
             public VoiceCallRecord map(String record) throws Exception {
                 try {
-                    return objectMapper.readValue(record, VoiceCallRecord.class);
+                    VoiceCallRecord callRecord = objectMapper.readValue(record, VoiceCallRecord.class);
+                    if (callRecord.getTimestamp() == null) {
+                        callRecord.setTimestamp(generateTimestamp());
+                    }
+                    return callRecord;
                 } catch (Exception e) {
                     System.err.println("Error parsing Voice Call record: " + e.getMessage());
                     return null;
@@ -114,7 +118,11 @@ public class StreamProcessor implements Serializable {
             @Override
             public SMSRecord map(String record) throws Exception {
                 try {
-                    return objectMapper.readValue(record, SMSRecord.class);
+                    SMSRecord smsRecord = objectMapper.readValue(record, SMSRecord.class);
+                    if (smsRecord.getTimestamp() == null) {
+                        smsRecord.setTimestamp(generateTimestamp());
+                    }
+                    return smsRecord;
                 } catch (Exception e) {
                     System.err.println("Error parsing SMS record: " + e.getMessage());
                     return null;
@@ -181,11 +189,13 @@ public class StreamProcessor implements Serializable {
             public DataSessionRecord map(String record) throws Exception {
                 try {
                     DataSessionRecord dataSessionRecord = objectMapper.readValue(record, DataSessionRecord.class);
+                    if (dataSessionRecord.getTimestamp() == null) {
+                        dataSessionRecord.setTimestamp(generateTimestamp());
+                    }
                     // Format dataVolumeMb to 2 decimal places
                     double formattedVolume = Math.round(dataSessionRecord.getDataVolumeMb() * 100.0) / 100.0;
                     dataSessionRecord.setDataVolumeMb(formattedVolume);
                     return dataSessionRecord;
-
                 } catch (Exception e) {
                     System.err.println("Error parsing Data Session record: " + e.getMessage());
                     return null;

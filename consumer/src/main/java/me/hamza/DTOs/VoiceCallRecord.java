@@ -71,6 +71,30 @@ public class VoiceCallRecord {
         return technology;
     }
 
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setCallerId(String callerId) {
+        this.callerId = callerId;
+    }
+
+    public void setCalleeId(String calleeId) {
+        this.calleeId = calleeId;
+    }
+
+    public void setDurationSec(Integer durationSec) {
+        this.durationSec = durationSec;
+    }
+
+    public void setCellId(String cellId) {
+        this.cellId = cellId;
+    }
+
+    public void setTechnology(String technology) {
+        this.technology = technology;
+    }
+
     @Override
     public String toString() {
         return "VoiceCallRecord [recordType=" + recordType + ", timestamp=" + timestamp + ", callerId=" + callerId

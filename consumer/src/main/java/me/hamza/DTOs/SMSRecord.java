@@ -60,6 +60,27 @@ public class SMSRecord {
         return technology;
     }
 
+    // Setters
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setSenderId(String senderId) {
+        this.senderId = senderId;
+    }
+
+    public void setReceiverId(String receiverId) {
+        this.receiverId = receiverId;
+    }
+
+    public void setCellId(String cellId) {
+        this.cellId = cellId;
+    }
+
+    public void setTechnology(String technology) {
+        this.technology = technology;
+    }
+
     @Override
     public String toString() {
         return "SMSRecord [recordType=" + recordType + ", timestamp=" + timestamp + ", senderId=" + senderId
