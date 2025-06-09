@@ -34,13 +34,14 @@ public class Main {
                 WatermarkStrategy.noWatermarks(), KafkaConfig.BOOTSTRAP_SERVERS);
 
         // Process streams
-        StreamProcessor processor = new StreamProcessor();
-        DataStream<String> processedVoiceCalls = processor.processVoiceCalls(voiceCalls);
-        DataStream<String> processedSmsMessages = processor.processSmsMessages(smsMessages);
-        DataStream<String> processedDataUsage = processor.processDataUsage(dataUsage);
+        StreamProcessor processor = new StreamProcessor("kafka:9092");
+        processor.processVoiceCalls(voiceCalls);
+        processor.processSmsMessages(smsMessages);
+        processor.processDataUsage(dataUsage);
 
         // Merge and process all streams
-        processor.mergeStreams(processedVoiceCalls, processedSmsMessages, processedDataUsage);
+        // processor.mergeStreams(processedVoiceCalls, processedSmsMessages,
+        // processedDataUsage);
 
         try {
             // Wait for topics to be created

@@ -69,6 +69,30 @@ public class DataSessionRecord {
         return technology;
     }
 
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setDataVolumeMb(Double dataVolumeMb) {
+        this.dataVolumeMb = dataVolumeMb;
+    }
+
+    public void setSessionDurationSec(Integer sessionDurationSec) {
+        this.sessionDurationSec = sessionDurationSec;
+    }
+
+    public void setCellId(String cellId) {
+        this.cellId = cellId;
+    }
+
+    public void setTechnology(String technology) {
+        this.technology = technology;
+    }
+
     @Override
     public String toString() {
         return "DataSessionRecord [recordType=" + recordType + ", timestamp=" + timestamp + ", userId=" + userId
