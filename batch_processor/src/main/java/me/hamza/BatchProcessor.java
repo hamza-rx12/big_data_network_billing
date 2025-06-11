@@ -55,7 +55,7 @@ public class BatchProcessor {
                 // Calculate total call duration by caller
                 Dataset<Row> totalCallDuration = voiceCalls
                                 .groupBy("caller_id")
-                                .agg(functions.sum("duration").as("total_duration"))
+                                .agg(functions.sum("duration_sec").as("total_duration"))
                                 .orderBy(functions.desc("total_duration"));
 
                 // Calculate total calls by caller
