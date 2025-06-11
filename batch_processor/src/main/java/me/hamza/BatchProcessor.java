@@ -21,6 +21,12 @@ public class BatchProcessor {
         private final ZonedDateTime startTime;
         private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ISO_INSTANT;
 
+        public String timestampSuffix() {
+                return String.format("_%s_%s",
+                                TIMESTAMP_FORMATTER.format(startTime).replace(":", "-"),
+                                TIMESTAMP_FORMATTER.format(endTime).replace(":", "-"));
+        }
+
         public BatchProcessor() {
                 this.spark = MongoConfig.createSparkSession();
                 this.endTime = ZonedDateTime.now(ZoneOffset.UTC);
@@ -64,12 +70,8 @@ public class BatchProcessor {
                                 .count()
                                 .orderBy(functions.desc("count"));
 
-                // Save results with timestamp range in collection name
-                String timestampSuffix = String.format("_%s_%s",
-                                TIMESTAMP_FORMATTER.format(startTime).replace(":", "-"),
-                                TIMESTAMP_FORMATTER.format(endTime).replace(":", "-"));
-                saveResults(totalCallDuration, "voice_calls_total_duration" + timestampSuffix);
-                saveResults(totalCalls, "voice_calls_total_count" + timestampSuffix);
+                saveResults(totalCallDuration, "voice_calls_total_duration");
+                saveResults(totalCalls, "voice_calls_total_count");
         }
 
         public void processSmsMessages() {
@@ -92,18 +94,7 @@ public class BatchProcessor {
                                 .count()
                                 .orderBy(functions.desc("count"));
 
-                // // Calculate average message length by sender
-                // Dataset<Row> avgMessageLength = smsMessages
-                // .groupBy("sender_id")
-                // .agg(functions.avg(functions.length(new Column("message")).as("avg_length")))
-                // .orderBy(functions.desc("avg_length"));
-
-                // Save results with timestamp range in collection name
-                String timestampSuffix = String.format("_%s_%s",
-                                TIMESTAMP_FORMATTER.format(startTime).replace(":", "-"),
-                                TIMESTAMP_FORMATTER.format(endTime).replace(":", "-"));
-                saveResults(totalMessages, "sms_total_messages" + timestampSuffix);
-                // saveResults(avgMessageLength, "sms_avg_length");
+                saveResults(totalMessages, "sms_total_messages");
         }
 
         public void processDataUsage() {
@@ -126,18 +117,7 @@ public class BatchProcessor {
                                 .agg(functions.sum("data_volume_mb").as("total_data_mb"))
                                 .orderBy(functions.desc("total_data_mb"));
 
-                // // Calculate average session duration by user
-                // Dataset<Row> avgSessionDuration = dataUsage
-                // .groupBy("user_id")
-                // .agg(functions.avg("duration").as("avg_duration"))
-                // .orderBy(functions.desc("avg_duration"));
-
-                // Save results with timestamp range in collection name
-                String timestampSuffix = String.format("_%s_%s",
-                                TIMESTAMP_FORMATTER.format(startTime).replace(":", "-"),
-                                TIMESTAMP_FORMATTER.format(endTime).replace(":", "-"));
-                saveResults(totalDataUsage, "data_usage_total" + timestampSuffix);
-                // saveResults(avgSessionDuration, "data_usage_avg_duration");
+                saveResults(totalDataUsage, "data_usage_total");
         }
 
         private void saveResults(Dataset<Row> results, String collectionName) {

@@ -3,13 +3,16 @@ package me.hamza;
 public class Main {
 
     public static void main(String[] args) {
-        BatchProcessor processor = new BatchProcessor();
+        BatchProcessor processor1 = new BatchProcessor();
+        RatingProcessor processor2 = new RatingProcessor();
         try {
-            processor.processVoiceCalls();
-            processor.processSmsMessages();
-            processor.processDataUsage();
+            processor1.processVoiceCalls();
+            processor1.processSmsMessages();
+            processor1.processDataUsage();
+            processor2.processRatings();
         } finally {
-            processor.close();
+            processor1.close();
+            processor2.close();
         }
     }
 }
