@@ -13,6 +13,7 @@ import org.apache.kafka.clients.admin.ListTopicsResult;
 
 import me.hamza.config.KafkaConfig;
 import me.hamza.processor.StreamProcessor;
+import me.hamza.processor.StreamProcessor.StreamPair;
 
 public class Main {
     public static final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -35,13 +36,14 @@ public class Main {
 
         // Process streams
         StreamProcessor processor = new StreamProcessor("kafka:9092");
-        processor.processVoiceCalls(voiceCalls);
-        processor.processSmsMessages(smsMessages);
-        processor.processDataUsage(dataUsage);
+
+        // Process individual streams and get their valid/invalid outputs
+        StreamPair validVoiceCalls = processor.processVoiceCalls(voiceCalls);
+        StreamPair validSmsMessages = processor.processSmsMessages(smsMessages);
+        StreamPair validDataUsage = processor.processDataUsage(dataUsage);
 
         // Merge and process all streams
-        // processor.mergeStreams(processedVoiceCalls, processedSmsMessages,
-        // processedDataUsage);
+        processor.mergeStreams(validVoiceCalls, validSmsMessages, validDataUsage);
 
         try {
             // Wait for topics to be created

@@ -14,6 +14,7 @@ import me.hamza.DTOs.DataSessionRecord;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import me.hamza.config.MongoConfig;
 
 public class StreamProcessor implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -43,8 +44,17 @@ public class StreamProcessor implements Serializable {
     //////////////////////////////////////////////////////////////
     //////////////////// Voice Calls Processor ///////////////////
     //////////////////////////////////////////////////////////////
-    ///
-    public DataStream<String> processVoiceCalls(DataStream<String> voiceCalls) {
+    public class StreamPair {
+        public final DataStream<String> valid;
+        public final DataStream<String> invalid;
+
+        public StreamPair(DataStream<String> valid, DataStream<String> invalid) {
+            this.valid = valid;
+            this.invalid = invalid;
+        }
+    }
+
+    public StreamPair processVoiceCalls(DataStream<String> voiceCalls) {
         // First, parse and validate the records
         DataStream<VoiceCallRecord> parsedCalls = voiceCalls.map(new MapFunction<String, VoiceCallRecord>() {
             @Override
@@ -77,42 +87,31 @@ public class StreamProcessor implements Serializable {
             }
         });
 
-        // Convert back to strings and send to Kafka
-        validCalls.map(new MapFunction<VoiceCallRecord, String>() {
+        // Convert back to strings
+        DataStream<String> validStream = validCalls.map(new MapFunction<VoiceCallRecord, String>() {
             @Override
             public String map(VoiceCallRecord record) throws Exception {
                 System.out.println("Valid Voice Call with caller_id: " + record.getCallerId());
                 return objectMapper.writeValueAsString(record);
             }
-        })
-                .name("Valid Voice Calls")
-                .sinkTo(createKafkaSink("valid-voice-calls"));
+        }).name("Valid Voice Calls");
 
-        invalidCalls.map(new MapFunction<VoiceCallRecord, String>() {
+        DataStream<String> invalidStream = invalidCalls.map(new MapFunction<VoiceCallRecord, String>() {
             @Override
             public String map(VoiceCallRecord record) throws Exception {
                 String reason = record == null ? "Parse Error" : "Missing Caller ID";
                 System.out.println("Invalid Voice Call: " + reason);
                 return record == null ? "{}" : objectMapper.writeValueAsString(record);
             }
-        })
-                .name("Invalid Voice Calls")
-                .sinkTo(createKafkaSink("invalid-voice-calls"));
+        }).name("Invalid Voice Calls");
 
-        // Return the valid calls stream for further processing
-        return validCalls.map(new MapFunction<VoiceCallRecord, String>() {
-            @Override
-            public String map(VoiceCallRecord record) throws Exception {
-                return objectMapper.writeValueAsString(record);
-            }
-        });
+        return new StreamPair(validStream, invalidStream);
     }
 
     //////////////////////////////////////////////////////////////
     ///////////////////// SMS Messages Processor /////////////////
     //////////////////////////////////////////////////////////////
-
-    public DataStream<String> processSmsMessages(DataStream<String> smsMessages) {
+    public StreamPair processSmsMessages(DataStream<String> smsMessages) {
         // First, parse and validate the records
         DataStream<SMSRecord> parsedSms = smsMessages.map(new MapFunction<String, SMSRecord>() {
             @Override
@@ -134,30 +133,28 @@ public class StreamProcessor implements Serializable {
         DataStream<SMSRecord> validSms = parsedSms.filter(new FilterFunction<SMSRecord>() {
             @Override
             public boolean filter(SMSRecord record) {
-                return record != null && record.getSenderId() != null && record.getReceiverId() != null;
+                return record != null && record.getSenderId() != null; // && record.getReceiverId() != null;
             }
         });
 
         DataStream<SMSRecord> invalidSms = parsedSms.filter(new FilterFunction<SMSRecord>() {
             @Override
             public boolean filter(SMSRecord record) {
-                return record == null || record.getSenderId() == null || record.getReceiverId() == null;
+                return record == null || record.getSenderId() == null; // || record.getReceiverId() == null;
             }
         });
 
-        // Convert back to strings and send to Kafka
-        validSms.map(new MapFunction<SMSRecord, String>() {
+        // Convert back to strings
+        DataStream<String> validStream = validSms.map(new MapFunction<SMSRecord, String>() {
             @Override
             public String map(SMSRecord record) throws Exception {
                 System.out.println("Valid SMS with sender_id: " + record.getSenderId() +
                         " and receiver_id: " + record.getReceiverId());
                 return objectMapper.writeValueAsString(record);
             }
-        })
-                .name("Valid SMS Messages")
-                .sinkTo(createKafkaSink("valid-sms-messages"));
+        }).name("Valid SMS Messages");
 
-        invalidSms.map(new MapFunction<SMSRecord, String>() {
+        DataStream<String> invalidStream = invalidSms.map(new MapFunction<SMSRecord, String>() {
             @Override
             public String map(SMSRecord record) throws Exception {
                 String reason = record == null ? "Parse Error"
@@ -165,24 +162,15 @@ public class StreamProcessor implements Serializable {
                 System.out.println("Invalid SMS: " + reason);
                 return record == null ? "{}" : objectMapper.writeValueAsString(record);
             }
-        })
-                .name("Invalid SMS Messages")
-                .sinkTo(createKafkaSink("invalid-sms-messages"));
+        }).name("Invalid SMS Messages");
 
-        // Return the valid SMS stream for further processing
-        return validSms.map(new MapFunction<SMSRecord, String>() {
-            @Override
-            public String map(SMSRecord record) throws Exception {
-                return objectMapper.writeValueAsString(record);
-            }
-        });
+        return new StreamPair(validStream, invalidStream);
     }
 
     //////////////////////////////////////////////////////////////
     ///////////////////// Data Usage Processor ///////////////////
     //////////////////////////////////////////////////////////////
-
-    public DataStream<String> processDataUsage(DataStream<String> dataUsage) {
+    public StreamPair processDataUsage(DataStream<String> dataUsage) {
         // First, parse and validate the records
         DataStream<DataSessionRecord> parsedData = dataUsage.map(new MapFunction<String, DataSessionRecord>() {
             @Override
@@ -218,20 +206,17 @@ public class StreamProcessor implements Serializable {
             }
         });
 
-        // Convert back to strings and send to Kafka
-        validData.map(new MapFunction<DataSessionRecord, String>() {
+        // Convert back to strings
+        DataStream<String> validStream = validData.map(new MapFunction<DataSessionRecord, String>() {
             @Override
             public String map(DataSessionRecord record) throws Exception {
-
                 System.out.println("Valid Data Session with user_id: " + record.getUserId() +
                         " and volume: " + record.getDataVolumeMb() + "MB");
                 return objectMapper.writeValueAsString(record);
             }
-        })
-                .name("Valid Data Usage")
-                .sinkTo(createKafkaSink("valid-data-usage"));
+        }).name("Valid Data Usage");
 
-        invalidData.map(new MapFunction<DataSessionRecord, String>() {
+        DataStream<String> invalidStream = invalidData.map(new MapFunction<DataSessionRecord, String>() {
             @Override
             public String map(DataSessionRecord record) throws Exception {
                 String reason = record == null ? "Parse Error"
@@ -239,32 +224,47 @@ public class StreamProcessor implements Serializable {
                 System.out.println("Invalid Data Session: " + reason);
                 return record == null ? "{}" : objectMapper.writeValueAsString(record);
             }
-        })
-                .name("Invalid Data Usage")
-                .sinkTo(createKafkaSink("invalid-data-usage"));
+        }).name("Invalid Data Usage");
 
-        // Return the valid data stream for further processing
-        return validData.map(new MapFunction<DataSessionRecord, String>() {
-            @Override
-            public String map(DataSessionRecord record) throws Exception {
-                return objectMapper.writeValueAsString(record);
-            }
-        });
+        return new StreamPair(validStream, invalidStream);
     }
 
     //////////////////////////////////////////////////////////////
     /////////////////////// Merge Streams ////////////////////////
     //////////////////////////////////////////////////////////////
+    public void mergeStreams(StreamPair voiceCalls,
+            StreamPair smsMessages,
+            StreamPair dataUsage) {
+        // Merge all valid streams
+        DataStream<String> validStream = voiceCalls.valid.union(smsMessages.valid, dataUsage.valid)
+                .map(record -> {
+                    System.out.println("Valid Record: " + record);
+                    return record;
+                })
+                .name("Valid Streams Processor");
 
-    // public DataStream<String> mergeStreams(DataStream<String> voiceCalls,
-    // DataStream<String> smsMessages,
-    // DataStream<String> dataUsage) {
-    // return voiceCalls.union(smsMessages, dataUsage)
-    // .map(record -> {
-    // System.out.println("Merged Record: " + record);
-    // return record;
-    // })
-    // .name("Merged Stream Processor")
-    // .sinkTo(createKafkaSink("merged-records"));
-    // }
+        // Create separate streams for valid sinks
+        DataStream<String> validKafkaStream = validStream.map(record -> record);
+        DataStream<String> validMongoStream = validStream.map(record -> record);
+
+        // Apply sinks to valid streams
+        validKafkaStream.sinkTo(createKafkaSink("valid-records"));
+        validMongoStream.sinkTo(MongoConfig.createMongoSink("valid_records"));
+
+        // Merge all invalid streams
+        DataStream<String> invalidStream = voiceCalls.invalid.union(smsMessages.invalid, dataUsage.invalid)
+                .map(record -> {
+                    System.out.println("Invalid Record: " + record);
+                    return record;
+                })
+                .name("Invalid Streams Processor");
+
+        // Create separate streams for invalid sinks
+        DataStream<String> invalidKafkaStream = invalidStream.map(record -> record);
+        DataStream<String> invalidMongoStream = invalidStream.map(record -> record);
+
+        // Apply sinks to invalid streams
+        invalidKafkaStream.sinkTo(createKafkaSink("invalid-records"));
+        invalidMongoStream.sinkTo(MongoConfig.createMongoSink("invalid_records"));
+    }
 }
