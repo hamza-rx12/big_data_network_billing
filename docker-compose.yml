@@ -1,6 +1,8 @@
 version: '3.8'
 
 services:
+
+  # Zookeeper for managing configs
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
     container_name: zookeeper
@@ -12,6 +14,8 @@ services:
     networks:
       - my_net
 
+
+  # Kafka for messaging
   kafka:
     image: confluentinc/cp-kafka:7.4.0
     container_name: kafka
@@ -29,6 +33,8 @@ services:
     networks:
       - my_net
 
+
+  # Kafka-ui to see what's going on
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
@@ -42,15 +48,12 @@ services:
     networks:
       - my_net
 
+
+  # Producer to generate record streams
   producer:
     build:
       context: ./producer
     container_name: producer
-    # healthcheck:
-    #   test: [ "CMD", "curl", "-f", "http://kafka:9092" ]
-    #   interval: 5s
-    #   timeout: 3s
-    #   retries: 3
     depends_on:
       - kafka
       - database
@@ -59,9 +62,12 @@ services:
     networks:
       - my_net
 
+
+  # Flink job manager exposes a port where we can see our jobs
   jobmanager:
     image: confluentinc/cp-flink:1.18.1-cp3-java17-amd64
     command: jobmanager
+    container_name: flink-jobman
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
     ports:
@@ -69,25 +75,25 @@ services:
     networks:
       - my_net
 
+
+  # Flink task manager does the work
   taskmanager:
     image: confluentinc/cp-flink:1.18.1-cp3-java17-amd64
     command: taskmanager
+    container_name: flink-taskman
     depends_on:
       - jobmanager
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
     networks:
       - my_net
+  
 
+  # Flink consumer to process the streams 
   consumer:
     build:
       context: ./consumer
     container_name: consumer
-    # healthcheck:
-    #   test: [ "CMD", "curl", "-f", "http://kafka:9092" ]
-    #   interval: 5s
-    #   timeout: 3s
-    #   retries: 3
     depends_on:
       - kafka
       - producer
@@ -98,40 +104,18 @@ services:
     networks:
       - my_net
 
-  # # postgresdb:
-  # #   image: postgres:15
-  # #   container_name: postgresdb
-  # #   environment:
-  # #     POSTGRES_USER: admin
-  # #     POSTGRES_PASSWORD: admin
-  # #     POSTGRES_DB: mydatabase
-  # #   ports:
-  # #     - "5432:5432"
-  # #   networks:
-  # #     - my_net
 
-  # # database:
-  # #   build:
-  # #     context: ./database
-  # #   container_name: database
-  # #   depends_on:
-  # #     - postgresdb
-  # #   # environment:
-  # #   #   KAFKA_BROKER: kafka:9092
-  # #   networks:
-  # #     - my_net
-
+  # A database where to stock our data
   mongo:
     image: mongo:6
     container_name: mongo
-    # environment:
-    #   MONGO_INITDB_ROOT_USERNAME: admin
-    #   MONGO_INITDB_ROOT_PASSWORD: admin
     ports:
       - "27017:27017"
     networks:
       - my_net
 
+
+  # Our springboot backend that manages the database
   database:
     build: ./database/springboot_api
     image: springboot_api
@@ -144,7 +128,7 @@ services:
       - my_net
 
 
-  # Spark Master
+  # Spark Master where we publish our processes
   spark-master:
     build:
       context: ./batch_processor
@@ -161,13 +145,14 @@ services:
       - "7077:7077"  # Spark Master port
     networks:
       - my_net
-  # Spark Worker
+
+
+  # Spark Worker who does the job
   spark-worker:
-    # image: apache/spark:3.5.6-scala2.12-java17-python3-r-ubuntu
     build:
       context: ./batch_processor
       dockerfile: spark.Dockerfile
-    container_name: sparl-worker
+    container_name: spark-worker
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark-master:7077
@@ -180,6 +165,28 @@ services:
       - spark-master
     networks:
       - my_net
+
+
+  # Minio our object storage where we save our customer invoices 
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"  # API port
+      - "9001:9001"  # Console port
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - my_net
+
 
 networks:
   my_net:

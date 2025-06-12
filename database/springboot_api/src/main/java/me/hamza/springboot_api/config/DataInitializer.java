@@ -98,14 +98,14 @@ public class DataInitializer {
             ProductRate basicSms = new ProductRate();
             basicSms.setServiceType(2); // SMS-messages
             basicSms.setUnitPrice(0.50f); // 0.50 MAD per SMS
-            basicSms.setFreeUnitsPerCycle(50);
+            basicSms.setFreeUnitsPerCycle(20);
             basicRates.add(basicSms);
 
             // Data rates for basic plan
             ProductRate basicData = new ProductRate();
             basicData.setServiceType(3); // Data-session-usage
             basicData.setUnitPrice(0.10f); // 0.10 MAD per MB
-            basicData.setFreeUnitsPerCycle(500);
+            basicData.setFreeUnitsPerCycle(300);
             basicRates.add(basicData);
 
             basicPlan.setProductRates(basicRates);
@@ -124,14 +124,14 @@ public class DataInitializer {
             ProductRate premiumVoice = new ProductRate();
             premiumVoice.setServiceType(1); // voice-calls
             premiumVoice.setUnitPrice(0.01f); // 0.01 MAD per minute
-            premiumVoice.setFreeUnitsPerCycle(300);
+            premiumVoice.setFreeUnitsPerCycle(200);
             premiumRates.add(premiumVoice);
 
             // SMS rates for premium plan
             ProductRate premiumSms = new ProductRate();
             premiumSms.setServiceType(2); // SMS-messages
             premiumSms.setUnitPrice(0.30f); // 0.30 MAD per SMS
-            premiumSms.setFreeUnitsPerCycle(200);
+            premiumSms.setFreeUnitsPerCycle(50);
             // Add tiered pricing for SMS
             List<TieredPricing> premiumSmsTiers = new ArrayList<>();
             TieredPricing premiumSmsTier1 = new TieredPricing();
@@ -149,7 +149,7 @@ public class DataInitializer {
             ProductRate premiumData = new ProductRate();
             premiumData.setServiceType(3); // Data-session-usage
             premiumData.setUnitPrice(0.05f); // 0.05 MAD per MB
-            premiumData.setFreeUnitsPerCycle(2000);
+            premiumData.setFreeUnitsPerCycle(500);
             // Add tiered pricing for Data
             List<TieredPricing> premiumDataTiers = new ArrayList<>();
             TieredPricing premiumDataTier1 = new TieredPricing();
@@ -179,7 +179,7 @@ public class DataInitializer {
             ProductRate businessVoice = new ProductRate();
             businessVoice.setServiceType(1); // voice-calls
             businessVoice.setUnitPrice(0.015f); // 0.015 MAD per minute
-            businessVoice.setFreeUnitsPerCycle(500);
+            businessVoice.setFreeUnitsPerCycle(300);
             // Add tiered pricing for Voice
             List<TieredPricing> businessVoiceTiers = new ArrayList<>();
             TieredPricing businessVoiceTier1 = new TieredPricing();
@@ -197,7 +197,7 @@ public class DataInitializer {
             ProductRate businessSms = new ProductRate();
             businessSms.setServiceType(2); // SMS-messages
             businessSms.setUnitPrice(0.25f); // 0.25 MAD per SMS
-            businessSms.setFreeUnitsPerCycle(500);
+            businessSms.setFreeUnitsPerCycle(300);
             // Add tiered pricing for SMS
             List<TieredPricing> businessSmsTiers = new ArrayList<>();
             TieredPricing businessSmsTier1 = new TieredPricing();
@@ -215,7 +215,7 @@ public class DataInitializer {
             ProductRate businessData = new ProductRate();
             businessData.setServiceType(3); // Data-session-usage
             businessData.setUnitPrice(0.03f); // 0.03 MAD per MB
-            businessData.setFreeUnitsPerCycle(5000);
+            businessData.setFreeUnitsPerCycle(1000);
             // Add tiered pricing for Data
             List<TieredPricing> businessDataTiers = new ArrayList<>();
             TieredPricing businessDataTier1 = new TieredPricing();

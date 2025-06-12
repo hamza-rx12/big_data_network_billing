@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice #{{ invoice.invoice_id }}</title>
+    <style>
+        :root {
+            --primary-color: #4be3a6;
+            --primary-dark: #3bc38d;
+            --text-color: #1a202c;
+            --text-light: #4a5568;
+            --border-color: #e2e8f0;
+            --bg-light: #f8fafc;
+            --accent-color: #2d3748;
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.5;
+            color: var(--text-color);
+            margin: 0;
+            padding: 25px;
+            font-size: 12px;
+        }
+
+        .invoice-container {
+            background-color: white;
+            padding: 30px;
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .company-info {
+            text-align: right;
+        }
+
+        .company-info h2 {
+            color: var(--accent-color);
+            margin: 0 0 8px 0;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .company-info p {
+            color: var(--text-light);
+            margin: 3px 0;
+            font-size: 12px;
+        }
+
+        .invoice-title {
+            color: var(--accent-color);
+            font-size: 28px;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .invoice-number {
+            color: var(--text-light);
+            font-size: 14px;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        .invoice-date {
+            color: var(--text-light);
+            font-size: 12px;
+        }
+
+        .invoice-details {
+            margin-bottom: 25px;
+            background-color: var(--bg-light);
+            padding: 20px;
+            border-radius: 6px;
+        }
+
+        .invoice-details h3 {
+            color: var(--accent-color);
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .invoice-details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .invoice-details th,
+        .invoice-details td {
+            padding: 8px 0;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 12px;
+        }
+
+        .invoice-details th {
+            font-weight: 500;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .charges-section,
+        .usage-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: var(--accent-color);
+            font-size: 16px;
+            margin: 0 0 15px 0;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .charges-section table,
+        .usage-section table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .charges-section th,
+        .charges-section td,
+        .usage-section th,
+        .usage-section td {
+            padding: 10px 0;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 12px;
+        }
+
+        .charges-section th,
+        .usage-section th {
+            font-weight: 500;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .charges-section th:last-child,
+        .usage-section th:last-child {
+            text-align: right;
+        }
+
+        .charges-section td:last-child,
+        .usage-section td:last-child {
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .total-section {
+            text-align: right;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .total-label {
+            color: var(--text-light);
+            font-size: 14px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .total-amount {
+            font-size: 24px;
+            color: var(--text-color);
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .amount {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .section-divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 25px 0;
+        }
+
+        .highlight {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="invoice-container">
+        <div class="invoice-header">
+            <div>
+                <h1 class="invoice-title">INVOICE</h1>
+                <p class="invoice-number">Invoice #{{ invoice.invoice_id }}</p>
+                <p class="invoice-date">Date: {{ invoice.billing_date }}</p>
+            </div>
+            <div class="company-info">
+                <h2>Telecom Company</h2>
+                <p>boukidan</p>
+                <p>Al Hoceima, Morocco</p>
+                <p>Ensah@company.com</p>
+            </div>
+        </div>
+
+        <div class="invoice-details">
+            <h3>Customer Information</h3>
+            <table>
+                <tr>
+                    <th>Customer ID</th>
+                    <td>{{ invoice.customer_id }}</td>
+                </tr>
+                <tr>
+                    <th>Customer Name</th>
+                    <td>{{ invoice.customer_name }}</td>
+                </tr>
+                <tr>
+                    <th>Subscription Type</th>
+                    <td>{{ invoice.subscription_type }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="charges-section">
+            <h3 class="section-title">Charges</h3>
+            <table>
+                <tr>
+                    <th>Service</th>
+                    <th>Amount</th>
+                </tr>
+                <tr>
+                    <td>Voice Charges</td>
+                    <td class="amount">{{ "%.2f"|format(invoice.charges.voice) }} DH</td>
+                </tr>
+                <tr>
+                    <td>SMS Charges</td>
+                    <td class="amount">{{ "%.2f"|format(invoice.charges.sms) }} DH</td>
+                </tr>
+                <tr>
+                    <td>Data Charges</td>
+                    <td class="amount">{{ "%.2f"|format(invoice.charges.data) }} DH</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="usage-section">
+            <h3 class="section-title">Usage Summary</h3>
+            <table>
+                <tr>
+                    <th>Service</th>
+                    <th>Usage</th>
+                </tr>
+                <tr>
+                    <td>Voice Minutes</td>
+                    <td class="amount">{{ invoice.usage.voice_minutes }}</td>
+                </tr>
+                <tr>
+                    <td>SMS Count</td>
+                    <td class="amount">{{ invoice.usage.sms_count }}</td>
+                </tr>
+                <tr>
+                    <td>Data Usage (MB)</td>
+                    <td class="amount">{{ "%.2f"|format(invoice.usage.data_mb) }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="total-section">
+            <p class="total-label">Total Amount Due</p>
+            <p class="total-amount">{{ "%.2f"|format(invoice.charges.total) }} DH</p>
+        </div>
+    </div>
+</body>
+
+</html>
